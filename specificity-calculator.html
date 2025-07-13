@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Specificity Calculator - Interactive Demo</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .interactive-demo {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .selector-input {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-group input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+        
+        .specificity-result {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .test-element {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .specificity-examples {
+            margin-top: 2rem;
+        }
+        
+        .example-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .example-row:last-child {
+            border-bottom: none;
+        }
+        
+        .selector-code {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+        
+        .specificity-score {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <h1>CSS Specificity Calculator</h1>
+        <ul>
+            <li><a href="index.html">← Back to Main</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <section class="section">
+            <h2>Interactive Specificity Calculator</h2>
+            <p>Enter the number of each selector type to calculate the total specificity score:</p>
+            
+            <div class="interactive-demo">
+                <div class="selector-input">
+                    <div class="input-group">
+                        <label for="inline">Inline Styles</label>
+                        <input type="number" id="inline" value="0" min="0">
+                        <small>1000 each</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="ids">IDs</label>
+                        <input type="number" id="ids" value="0" min="0">
+                        <small>100 each</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="classes">Classes/Attributes</label>
+                        <input type="number" id="classes" value="0" min="0">
+                        <small>10 each</small>
+                    </div>
+                    <div class="input-group">
+                        <label for="elements">Elements</label>
+                        <input type="number" id="elements" value="0" min="0">
+                        <small>1 each</small>
+                    </div>
+                </div>
+                
+                <div class="specificity-result" id="result">
+                    Specificity: 0,0,0,0 = 0
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Common Specificity Examples</h2>
+            <div class="specificity-examples">
+                <div class="example-row">
+                    <span class="selector-code">*</span>
+                    <span class="specificity-score">0,0,0,0 = 0</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">div</span>
+                    <span class="specificity-score">0,0,0,1 = 1</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">.class</span>
+                    <span class="specificity-score">0,0,1,0 = 10</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">div.class</span>
+                    <span class="specificity-score">0,0,1,1 = 11</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">#id</span>
+                    <span class="specificity-score">0,1,0,0 = 100</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">#id.class</span>
+                    <span class="specificity-score">0,1,1,0 = 110</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">div#id.class</span>
+                    <span class="specificity-score">0,1,1,1 = 111</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">style="color: red;"</span>
+                    <span class="specificity-score">1,0,0,0 = 1000</span>
+                </div>
+                <div class="example-row">
+                    <span class="selector-code">div { color: red !important; }</span>
+                    <span class="specificity-score">∞ (Always wins)</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Specificity Battle Ground</h2>
+            <p>See how different selectors compete for the same element:</p>
+            
+            <div class="test-element" id="battle-element">
+                <div class="container">
+                    <p class="text highlight special">
+                        This text will show which selector wins!
+                    </p>
+                </div>
+            </div>
+            
+            <div class="code-example">
+                <pre><code>/* These selectors all target the same element */
+
+/* Specificity: 0,0,1,0 = 10 */
+.text { color: red; }
+
+/* Specificity: 0,0,2,0 = 20 */
+.text.highlight { color: blue; }
+
+/* Specificity: 0,0,3,0 = 30 */
+.text.highlight.special { color: green; }
+
+/* Specificity: 0,0,1,3 = 13 */
+div.container p.text { color: orange; }
+
+/* Specificity: 0,1,0,2 = 102 */
+#battle-element div p { color: purple; }
+
+/* This will always win regardless of specificity */
+.text { color: black !important; }</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Interactive specificity calculator
+        function calculateSpecificity() {
+            const inline = parseInt(document.getElementById('inline').value) || 0;
+            const ids = parseInt(document.getElementById('ids').value) || 0;
+            const classes = parseInt(document.getElementById('classes').value) || 0;
+            const elements = parseInt(document.getElementById('elements').value) || 0;
+            
+            const total = (inline * 1000) + (ids * 100) + (classes * 10) + (elements * 1);
+            
+            document.getElementById('result').textContent = 
+                `Specificity: ${inline},${ids},${classes},${elements} = ${total}`;
+        }
+        
+        // Add event listeners
+        document.getElementById('inline').addEventListener('input', calculateSpecificity);
+        document.getElementById('ids').addEventListener('input', calculateSpecificity);
+        document.getElementById('classes').addEventListener('input', calculateSpecificity);
+        document.getElementById('elements').addEventListener('input', calculateSpecificity);
+    </script>
+    
+    <style>
+        /* Specificity battle styles */
+        
+        /* Specificity: 0,0,1,0 = 10 */
+        .text { color: red; }
+        
+        /* Specificity: 0,0,2,0 = 20 */
+        .text.highlight { color: blue; }
+        
+        /* Specificity: 0,0,3,0 = 30 */
+        .text.highlight.special { color: green; }
+        
+        /* Specificity: 0,0,1,3 = 13 */
+        div.container p.text { color: orange; }
+        
+        /* Specificity: 0,1,0,2 = 102 */
+        #battle-element div p { color: purple; }
+        
+        /* This will always win regardless of specificity */
+        .text { color: black !important; }
+    </style>
+</body>
+</html>

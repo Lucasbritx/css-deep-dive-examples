@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Cascade Deep Dive</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .cascade-demo-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .demo-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .demo-element {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .step-indicator {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .origin-demo {
+            margin: 2rem 0;
+        }
+        
+        .origin-styles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .origin-box {
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .user-agent {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+        }
+        
+        .author-normal {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+        }
+        
+        .author-important {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .user-important {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .cascade-flow {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .flow-step .step-number {
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .source-order-demo {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .cascade-demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .origin-styles {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <h1>CSS Cascade Deep Dive</h1>
+        <ul>
+            <li><a href="index.html">← Back to Main</a></li>
+            <li><a href="specificity-calculator.html">Specificity Calculator</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <section class="section">
+            <h2>Understanding the CSS Cascade</h2>
+            <p>The cascade is the algorithm that determines which styles are applied when multiple CSS rules target the same element. It follows a specific order of precedence.</p>
+            
+            <div class="cascade-flow">
+                <h3>The Cascade Algorithm</h3>
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>Origin and Importance</h4>
+                        <p>Determines the source of the stylesheet and whether !important is used</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>Specificity</h4>
+                        <p>Calculates how specific the selector is (inline, IDs, classes, elements)</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>Source Order</h4>
+                        <p>When origin and specificity are equal, the last rule wins</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Step 1: Origin and Importance</h2>
+            <p>CSS rules come from different origins, each with different levels of importance:</p>
+            
+            <div class="origin-demo">
+                <div class="origin-styles">
+                    <div class="origin-box user-agent">
+                        <h4>User Agent</h4>
+                        <p>Browser defaults</p>
+                        <small>Lowest priority</small>
+                    </div>
+                    <div class="origin-box author-normal">
+                        <h4>Author Normal</h4>
+                        <p>Your CSS</p>
+                        <small>Normal priority</small>
+                    </div>
+                    <div class="origin-box author-important">
+                        <h4>Author !important</h4>
+                        <p>Your CSS with !important</p>
+                        <small>High priority</small>
+                    </div>
+                    <div class="origin-box user-important">
+                        <h4>User !important</h4>
+                        <p>User overrides</p>
+                        <small>Highest priority</small>
+                    </div>
+                </div>
+                
+                <div class="demo-element origin-demo-element">
+                    This element demonstrates origin precedence
+                </div>
+                
+                <div class="code-example">
+                    <pre><code>/* User Agent (browser default) */
+p { margin: 1em 0; }
+
+/* Author normal */
+.origin-demo-element { color: blue; }
+
+/* Author !important - this wins */
+.origin-demo-element { color: red !important; }</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Step 2: Specificity</h2>
+            <p>When origins are equal, specificity determines the winner:</p>
+            
+            <div class="cascade-demo-container">
+                <div class="demo-box">
+                    <div class="step-indicator">1</div>
+                    <h3>Specificity example</h3>
+                    <div class="demo-element specificity-demo-a" id="specific-id">
+                        Element with specificity-demo-a and specific-id
+                    </div>
+                    <div class="code-example">
+                        <pre><code>/* Specificity: 0,0,1,0 = 10 */
+.specificity-demo-a { 
+    color: green; 
+}</code></pre>
+<pre><code>/* Specificity: 0,1,0,0 = 100 <- this will win*/
+#specific-id { 
+    color: purple; 
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Step 3: Source Order</h2>
+            <p>When origin and specificity are equal, the last rule in source order wins:</p>
+            
+            <div class="source-order-demo">
+                <h3>Source Order Example</h3>
+                <div class="demo-element source-order-element">
+                    This text shows source order in action
+                </div>
+                
+                <div class="code-example">
+                    <pre><code>/* Rule 1: Specificity 0,0,1,0 = 10 */
+.source-order-element { color: red; }
+
+/* Rule 2: Specificity 0,0,1,0 = 10 (same as above) */
+/* This rule comes later in source order, so it wins */
+.source-order-element { color: blue; }</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Complex Cascade Example</h2>
+            <p>A comprehensive example showing all three steps working together:</p>
+            
+            <div class="demo-element complex-demo" id="complex-element">
+                <div class="wrapper">
+                    <p class="text highlight">Complex cascade demonstration</p>
+                </div>
+            </div>
+            
+            <div class="code-example">
+                <pre><code>/* Step 1: All are author styles, no !important */
+
+/* Step 2: Specificity comparison */
+/* Specificity: 0,0,1,0 = 10 */
+.text { color: red; }
+
+/* Specificity: 0,0,2,0 = 20 */
+.text.highlight { color: blue; }
+
+/* Specificity: 0,0,1,3 = 13 - lower than above */
+div.wrapper p.text { color: orange; }
+
+/* Specificity: 0,1,0,2 = 102 - highest specificity wins */
+#complex-element div p { color: green; }
+
+/* Step 3: Source order doesn't matter here because 
+   specificities are different */</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Cascade Tips and Best Practices</h2>
+            <div class="example-container">
+                <h3>1. Avoid !important</h3>
+                <p>Use !important sparingly as it breaks the natural cascade flow and makes debugging difficult.</p>
+                
+                <h3>2. Keep specificity low</h3>
+                <p>Write selectors with low specificity to make them easier to override later.</p>
+                
+                <h3>3. Use the cascade to your advantage</h3>
+                <p>Structure your CSS so that general styles come first, followed by more specific ones.</p>
+                
+                <h3>4. Understand source order</h3>
+                <p>Later rules override earlier ones when specificity is equal.</p>
+                
+                <h3>5. Use CSS layers (future)</h3>
+                <p>CSS Cascade Layers (@layer) provide better control over cascade order.</p>
+            </div>
+        </section>
+    </main>
+
+    <style>
+        /* Origin demonstration styles */
+        .origin-demo-element {
+            color: blue; /* Author normal */
+        }
+        
+        .origin-demo-element {
+            color: red !important; /* Author !important - wins */
+        }
+        
+        /* Specificity demonstration styles */
+        .specificity-demo-a {
+            color: green; /* Specificity: 0,0,1,0 = 10 */
+        }
+        
+        .specificity-demo-b {
+            color: orange; /* Specificity: 0,0,1,0 = 10 */
+        }
+        
+        #specific-id {
+            color: purple; /* Specificity: 0,1,0,0 = 100 - wins */
+        }
+        
+        /* Source order demonstration */
+        .source-order-element {
+            color: red; /* Rule 1: Specificity 0,0,1,0 = 10 */
+        }
+        
+        .source-order-element {
+            color: blue; /* Rule 2: Same specificity, later in source order - wins */
+        }
+        
+        /* Complex cascade example */
+        .text {
+            color: red; /* Specificity: 0,0,1,0 = 10 */
+        }
+        
+        .text.highlight {
+            color: blue; /* Specificity: 0,0,2,0 = 20 */
+        }
+        
+        div.wrapper p.text {
+            color: orange; /* Specificity: 0,0,1,3 = 13 */
+        }
+        
+        #complex-element div p {
+            color: green; /* Specificity: 0,1,0,2 = 102 - wins */
+        }
+    </style>
+</body>
+</html>

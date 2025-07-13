@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Deep Dive: How CSS Works Under the Hood</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <h1>CSS Deep Dive</h1>
+        <ul>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#origin-importance">Origin & Importance</a></li>
+            <li><a href="#specificity">Specificity</a></li>
+            <li><a href="#cascade">The Cascade</a></li>
+            <li><a href="#inheritance">Inheritance</a></li>
+            <li><a href="#box-model">Box Model</a></li>
+            <li><a href="#stacking">Stacking Context</a></li>
+            <li><a href="specificity-calculator.html">🧮 Specificity Calculator</a></li>
+            <li><a href="cascade-demo.html">🌊 Cascade Demo</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <section id="introduction" class="section">
+            <h2>How CSS Works Under the Hood</h2>
+            <p>CSS (Cascading Style Sheets) is more than just styling - it's a complex system with specific rules for how styles are applied, inherited, and prioritized. This deep dive explores the fundamental mechanisms that make CSS work.</p>
+        </section>
+
+        <section id="origin-importance" class="section">
+            <h2>Origin and Importance</h2>
+            <p>CSS has three main origins, each with different levels of importance:</p>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Cascade#origin_types">MDN Origin types</a>
+            
+            <div class="example-container">
+                <h3>1. User Agent (Browser) Styles</h3>
+                <p>Default styles provided by the browser</p>
+                <div class="code-example">
+                    <pre><code>/* Browser default styles */
+body { margin: 8px; }
+h1 { font-size: 2em; margin: 0.67em 0; }
+p { margin: 1em 0; }</code></pre>
+                </div>
+            </div>
+
+            <div class="example-container">
+                <h3>2. Author Styles (Your CSS)</h3>
+                <p>Styles written by web developers</p>
+                <div class="code-example">
+                    <pre><code>/* Author styles */
+body { margin: 0; }
+h1 { color: #333; }
+.important { color: red !important; }</code></pre>
+                </div>
+            </div>
+
+            <div class="example-container">
+                <h3>3. User Styles</h3>
+                <p>Styles set by the user (accessibility preferences, etc.)</p>
+                <div class="code-example">
+                    <pre><code>/* User styles (rare) */
+* { font-size: 18px !important; }</code></pre>
+                </div>
+            </div>
+
+            <div class="importance-demo">
+                <h3>Importance Hierarchy</h3>
+                <ol>
+                    <li><strong>User !important</strong> - Highest priority</li>
+                    <li><strong>Author !important</strong></li>
+                    <li><strong>Author normal</strong></li>
+                    <li><strong>User normal</strong></li>
+                    <li><strong>User agent</strong> - Lowest priority</li>
+                </ol>
+                
+                <div class="demo-box importance-demo-box">
+                    <p class="normal-style">Normal author style</p>
+                    <p class="important-style">Important author style</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="specificity" class="section">
+            <h2>CSS Specificity</h2>
+            <p>Specificity is how browsers determine which CSS rules to apply when multiple rules target the same element.</p>
+            
+            <div class="specificity-calculator">
+                <h3>Specificity Calculator</h3>
+                <div class="specificity-grid">
+                    <div class="specificity-column">
+                        <h4>Inline Styles</h4>
+                        <p>1000 points</p>
+                        <code>style="color: red;"</code>
+                    </div>
+                    <div class="specificity-column">
+                        <h4>IDs</h4>
+                        <p>100 points</p>
+                        <code>#header</code>
+                    </div>
+                    <div class="specificity-column">
+                        <h4>Classes, Attributes, Pseudo-classes</h4>
+                        <p>10 points</p>
+                        <code>.nav, [href], :hover</code>
+                    </div>
+                    <div class="specificity-column">
+                        <h4>Elements & Pseudo-elements</h4>
+                        <p>1 point</p>
+                        <code>div, ::before</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="specificity-examples">
+                <h3>Specificity Examples</h3>
+                <div class="example-container">
+                    <h4>Example 1: Basic Specificity</h4>
+                    <div class="demo-element" id="demo1">
+                        <p class="text blue-text">This text demonstrates specificity</p>
+                    </div>
+                    <div class="code-example">
+                        <pre><code>/* Specificity: 0,0,1,1 = 11 */
+p.text { color: green; }
+
+/* Specificity: 0,0,2,0 = 20 */
+.text.blue-text { color: blue; }
+
+/* Specificity: 0,1,0,1 = 101 */
+#demo1 p { color: red; }</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-container">
+                    <h4>Example 2: Complex Specificity</h4>
+                    <div class="demo-element" id="demo2">
+                        <div class="container">
+                            <p class="highlight special">Complex specificity example</p>
+                        </div>
+                    </div>
+                    <div class="code-example">
+                        <pre><code>/* Specificity: 0,0,1,1 = 11 */
+p.highlight { color: orange; }
+
+/* Specificity: 0,0,2,2 = 22 */
+div.container p.special { color: purple; }
+
+/* Specificity: 0,1,1,2 = 112 */
+#demo2 div.container p { color: navy; }</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cascade" class="section">
+            <h2>The CSS Cascade</h2>
+            <p>The cascade is the algorithm that determines which styles are applied when multiple rules conflict.</p>
+            
+            <div class="cascade-algorithm">
+                <h3>Cascade Algorithm Steps</h3>
+                <ol>
+                    <li><strong>Origin & Importance</strong> - Where the rule comes from</li>
+                    <li><strong>Specificity</strong> - How specific the selector is</li>
+                    <li><strong>Source Order</strong> - Last rule wins</li>
+                </ol>
+            </div>
+
+            <div class="cascade-demo">
+                <h3>Cascade Demonstration</h3>
+                <div class="demo-element">
+                    <p class="cascade-text" id="cascade-example">
+                        This text shows the cascade in action
+                    </p>
+                </div>
+                <div class="code-example">
+                    <pre><code>/* Rule 1: Specificity 0,0,1,1 = 11 */
+p.cascade-text { color: red; }
+
+/* Rule 2: Specificity 0,0,1,1 = 11 (same as above) */
+/* Source order: this comes later, so it wins */
+p.cascade-text { color: blue; }
+
+/* Rule 3: Specificity 0,1,0,1 = 101 */
+/* Higher specificity wins */
+#cascade-example { color: green; }</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="inheritance" class="section">
+            <h2>CSS Inheritance</h2>
+            <p>Some CSS properties are inherited from parent elements, while others are not.</p>
+            
+            <div class="inheritance-demo">
+                <h3>Inherited vs Non-inherited Properties</h3>
+                <div class="parent-element">
+                    <h4>Parent Element</h4>
+                    <div class="child-element">
+                        <h5>Child Element</h5>
+                        <p>This text inherits font properties from its parent</p>
+                    </div>
+                </div>
+                
+                <div class="inheritance-table">
+                    <div class="table-column">
+                        <h4>Inherited Properties</h4>
+                        <ul>
+                            <li>font-family</li>
+                            <li>font-size</li>
+                            <li>color</li>
+                            <li>line-height</li>
+                            <li>text-align</li>
+                            <li>list-style</li>
+                        </ul>
+                    </div>
+                    <div class="table-column">
+                        <h4>Non-inherited Properties</h4>
+                        <ul>
+                            <li>margin</li>
+                            <li>padding</li>
+                            <li>border</li>
+                            <li>background</li>
+                            <li>width</li>
+                            <li>height</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inheritance-keywords">
+                <h3>Inheritance Keywords</h3>
+                <div class="keyword-demo">
+                    <div class="inherit-demo">inherit</div>
+                    <div class="initial-demo">initial</div>
+                    <div class="unset-demo">unset</div>
+                </div>
+                <div class="code-example">
+                    <pre><code>.inherit-demo { color: inherit; }  /* Inherits from parent */
+.initial-demo { color: initial; }  /* Browser default */
+.unset-demo { color: unset; }      /* Inherit if inherited, initial if not */</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="box-model" class="section">
+            <h2>The CSS Box Model</h2>
+            <p>Every element in CSS is essentially a box with content, padding, border, and margin.</p>
+            
+            <div class="box-model-demo">
+                <div class="box-model-visual">
+                    <div class="margin-area">
+                        <div class="margin-label">margin</div>
+                        <div class="border-area">
+                            <div class="border-label">border</div>
+                            <div class="padding-area">
+                                <div class="padding-label">padding</div>
+                                <div class="content-area">
+                                    <div class="content-label">content</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="box-sizing-demo">
+                    <h3>Box-sizing Property</h3>
+                    <div class="box-content-box">content-box (default)</div>
+                    <div class="box-border-box">border-box</div>
+                    <div class="code-example">
+                        <pre><code>.content-box { box-sizing: content-box; }
+/* width = content width only */
+
+.border-box { box-sizing: border-box; }
+/* width = content + padding + border */</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stacking" class="section">
+            <h2>Stacking Context</h2>
+            <p>The stacking context determines the order in which elements are painted on the screen.</p>
+            
+            <div class="stacking-demo">
+                <h3>Z-index and Stacking Order</h3>
+                <div class="stacking-container">
+                    <div class="stack-element stack-1">z-index: 1</div>
+                    <div class="stack-element stack-2">z-index: 2</div>
+                    <div class="stack-element stack-3">z-index: 3</div>
+                </div>
+                
+                <div class="stacking-rules">
+                    <h4>Stacking Order (back to front)</h4>
+                    <ol>
+                        <li>Root element background</li>
+                        <li>Non-positioned elements (normal flow)</li>
+                        <li>Positioned elements with negative z-index</li>
+                        <li>Positioned elements with z-index: auto or 0</li>
+                        <li>Positioned elements with positive z-index</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 CSS Deep Dive Project. Understanding how CSS works under the hood.</p>
+    </footer>
+</body>
+</html>
